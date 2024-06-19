@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface PedidoService {
     void salvarPedido(List<PedidoDTO> pedidoDTO);
-    List<Pedido> listarPedidos();
-    List<Pedido> listarPedidosPorData(LocalDate dataCadastro);
+    List<Pedido> listarPedidos(LocalDate dataCadastro, Long numeroControle);
+
 }

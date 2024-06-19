@@ -10,23 +10,24 @@ import java.time.LocalDate;
 @Getter @Setter
 public class PedidoDTO {
 
-    @NotNull
+    @NotNull(message = "O campo Numero Controle  é obrigatório ")
     private Long numeroControle;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate dataCadastro;
 
-    @NotBlank
+    @NotBlank (message = "O campo Nome  é obrigatório ")
     private String nome;
 
-    @NotNull
+    @NotNull(message = "O campo Valor  é obrigatório ")
     @Positive
     private BigDecimal valor;
 
     @PositiveOrZero
     private Integer quantidade;
 
-    @NotNull
-    @Min(1) @Max(10)
+    @NotNull(message = "O campo Codigo do Cliente  é obrigatório ")
+    @Min(value= 1, message="Cliente não Cadastrado"  )
+    @Max(value= 10, message="Cliente não Cadastrado" )
     private Long codigoCliente;
 }

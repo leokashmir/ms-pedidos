@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -37,13 +38,18 @@ public class PedidoServiceImpl implements PedidoService {
     }
 
     @Override
-    public List<Pedido> listarPedidos() {
-        return pedidoRepository.findAll();
-    }
+    public List<Pedido> listarPedidos(LocalDate dataCadastro, Long numeroControle) {
+        List<Pedido> lstListaPedidos =  new ArrayList<>();
 
-    @Override
-    public List<Pedido> listarPedidosPorData(LocalDate dataCadastro) {
-        return pedidoRepository.findByDataCadastro(dataCadastro);
+        if(dataCadastro != null){
+            lstListaPedidos = pedidoRepository.findByDataCadastro(dataCadastro);
+        }else if( numeroControle != null){
+            lstListaPedidos.add(pedidoRepository.findByNumeroControle(numeroControle));
+        }else{
+            lstListaPedidos = pedidoRepository.findAll();
+        }
+
+        return   lstListaPedidos;
     }
 
     private boolean isCadastrado(PedidoDTO pedidoDto){

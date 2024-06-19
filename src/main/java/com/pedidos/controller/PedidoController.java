@@ -43,21 +43,12 @@ public class PedidoController {
         return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
 
-    @GetMapping("/search")
+    @GetMapping("/listar")
     public ResponseEntity<List<Pedido>> listarPedidos(
             @RequestParam(required = false) Long numeroControle,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataCadastro) {
-        if (numeroControle != null) {
-            Pedido pedido = pedidoService.listarPedidos().stream()
-                    .filter(p -> p.getNumeroControle().equals(numeroControle))
-                    .findFirst()
-                    .orElse(null);
-            return pedido != null ? ResponseEntity.ok(List.of(pedido)) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } else if (dataCadastro != null) {
-            return ResponseEntity.ok(pedidoService.listarPedidosPorData(dataCadastro));
-        } else {
-            return ResponseEntity.ok(pedidoService.listarPedidos());
-        }
+
+            return ResponseEntity.ok(pedidoService.listarPedidos(dataCadastro, numeroControle ));
     }
 
     private boolean isExcedeLimitePedidos(List<PedidoDTO> pedidos ){
