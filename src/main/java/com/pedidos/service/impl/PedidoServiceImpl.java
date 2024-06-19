@@ -2,6 +2,7 @@ package com.pedidos.service.impl;
 
 import com.pedidos.converter.PedidoConverter;
 import com.pedidos.dto.PedidoDTO;
+import com.pedidos.dto.PedidoSalvoDTO;
 import com.pedidos.model.Pedido;
 import com.pedidos.repository.PedidoRepository;
 import com.pedidos.service.PedidoService;
@@ -10,32 +11,63 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class PedidoServiceImpl implements PedidoService {
 
     @Autowired
     private PedidoRepository pedidoRepository;
-
     @Autowired
     private PedidoConverter pedidoConverter;
+    private static final String MSG_PARCIAL_ERRO = "Seguintes Pedidos já existem na base da dados ou não puderam ser incluidos";
+    private static final String MSG_ERRO = "Nenhum dos Pedidos foram incluidos";
+    private static final String MSG_OK = "Todos os pedidos foram incluidos ";
 
     @Transactional
     @Override
-    public void salvarPedido(List<PedidoDTO> listPedidosDto) {
-
-        listPedidosDto.stream()
+    public PedidoSalvoDTO salvarPedido(List<PedidoDTO> listPedidosDto) {
+      List<Pedido> listPedidosSalvos = new ArrayList<>();
+      listPedidosDto.stream()
                 .filter(p -> !isCadastrado(p))
                 .forEach(pedidoDto -> {
                     Pedido pedido =  pedidoConverter.apply(pedidoDto);
                     calcularValorPedido(pedido);
-                    pedidoRepository.save(pedido);
-
+                    listPedidosSalvos.add(pedidoRepository.save(pedido));
+                    System.out.println("===> " + pedido.getNumeroControle());
                 });
-    }
+
+        List<PedidoDTO> listPedidosRecusados = new ArrayList<>();
+        listPedidosDto.forEach(dto -> {
+          listPedidosSalvos.forEach( pedido -> {
+              if(!Objects.equals(dto.getNumeroControle(), pedido.getNumeroControle())){
+                  listPedidosRecusados.add(dto);
+              }
+          });
+        });
+
+
+        return (listPedidosSalvos.isEmpty()) ?
+                PedidoSalvoDTO.builder()
+                        .mensagem(MSG_ERRO)
+                        .build():
+                (listPedidosRecusados.isEmpty()) ?
+                PedidoSalvoDTO.builder()
+                        .mensagem(MSG_OK)
+                        .pedidosIncluidos(listPedidosSalvos.size())
+                        .build():
+                PedidoSalvoDTO.builder()
+                        .pedidosIncluidos(listPedidosSalvos.size())
+                        .mensagem(MSG_PARCIAL_ERRO)
+                        .pedidos(listPedidosRecusados)
+                        .build();
+     }
 
     @Override
     public List<Pedido> listarPedidos(LocalDate dataCadastro, Long numeroControle) {
@@ -58,6 +90,7 @@ public class PedidoServiceImpl implements PedidoService {
 
     private void calcularValorPedido(Pedido pedido){
         BigDecimal valorTotal = pedido.getValor().multiply(new BigDecimal(pedido.getQuantidade()));
+        valorTotal.setScale(2, RoundingMode.UP);
 
         if(pedido.getQuantidade() >= 10 ){
           pedido.setValorTotal(valorTotal.multiply(BigDecimal.valueOf(0.9)));

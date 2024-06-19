@@ -4,6 +4,7 @@ import com.pedidos.dto.PedidoDTO;
 import com.pedidos.model.Pedido;
 import org.springframework.stereotype.Component;
 
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.function.Function;
 
@@ -18,7 +19,7 @@ public class PedidoConverter  implements Function<PedidoDTO, Pedido> {
                 .dataCadastro(pedidoDTO.getDataCadastro() != null ? pedidoDTO.getDataCadastro() : LocalDate.now())
                 .nome(pedidoDTO.getNome())
                 .codigoCliente(pedidoDTO.getCodigoCliente())
-                .valor(pedidoDTO.getValor())
+                .valor(pedidoDTO.getValor().setScale(2, RoundingMode.UP))
                 .quantidade(pedidoDTO.getQuantidade() != null ? pedidoDTO.getQuantidade() : 1)
                 .build();
     }

@@ -1,6 +1,7 @@
 package com.pedidos.controller;
 
 import com.pedidos.dto.PedidoDTO;
+import com.pedidos.dto.PedidoSalvoDTO;
 import com.pedidos.model.Pedido;
 import com.pedidos.service.PedidoService;
 import jakarta.validation.Valid;
@@ -23,24 +24,21 @@ public class PedidoController {
     private PedidoService pedidoService;
 
     @PostMapping(value="/json",consumes = "application/json")
-    public ResponseEntity<List<Pedido>> criarPedidos(@RequestBody @Valid List<PedidoDTO> pedidosDTO) {
+    public ResponseEntity<PedidoSalvoDTO> criarPedidos(@RequestBody @Valid List<PedidoDTO> pedidosDTO) {
         if (isExcedeLimitePedidos(pedidosDTO)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        pedidoService.salvarPedido(pedidosDTO);
-        return new ResponseEntity<>(null, HttpStatus.CREATED);
+        return new ResponseEntity<>(pedidoService.salvarPedido(pedidosDTO), HttpStatus.OK);
     }
 
 
     @PostMapping(value="/xml", consumes = "application/xml")
-    public ResponseEntity<List<Pedido>> criarPedidosXml(@RequestBody @Valid List<PedidoDTO> pedidosDTO) {
+    public ResponseEntity<PedidoSalvoDTO> criarPedidosXml(@RequestBody @Valid List<PedidoDTO> pedidosDTO) {
 
         if (isExcedeLimitePedidos(pedidosDTO)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-
-        pedidoService.salvarPedido(pedidosDTO);
-        return new ResponseEntity<>(null, HttpStatus.CREATED);
+        return new ResponseEntity<>(pedidoService.salvarPedido(pedidosDTO), HttpStatus.OK);
     }
 
     @GetMapping("/listar")

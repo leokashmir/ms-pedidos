@@ -1,7 +1,10 @@
 server:
   port: 8080
 
-
+projeto:
+  application:
+    description: '@project.description@'
+    version: '@project.version@'
 
 spring:
   jackson:
