@@ -2,12 +2,13 @@ package com.pedidos.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-@Getter @Setter
+@Getter @Setter @Builder
 public class PedidoDTO {
 
     @NotNull(message = "O campo Numero Controle  é obrigatório ")

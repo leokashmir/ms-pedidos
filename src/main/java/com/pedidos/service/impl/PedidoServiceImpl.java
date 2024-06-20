@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 @Service
 public class PedidoServiceImpl implements PedidoService {
@@ -40,17 +40,14 @@ public class PedidoServiceImpl implements PedidoService {
                     Pedido pedido =  pedidoConverter.apply(pedidoDto);
                     calcularValorPedido(pedido);
                     listPedidosSalvos.add(pedidoRepository.save(pedido));
-                    System.out.println("===> " + pedido.getNumeroControle());
+
                 });
 
-        List<PedidoDTO> listPedidosRecusados = new ArrayList<>();
-        listPedidosDto.forEach(dto -> {
-          listPedidosSalvos.forEach( pedido -> {
-              if(!Objects.equals(dto.getNumeroControle(), pedido.getNumeroControle())){
-                  listPedidosRecusados.add(dto);
-              }
-          });
-        });
+        List<PedidoDTO> listPedidosRecusados = listPedidosDto.stream()
+                .filter(dto -> listPedidosSalvos.stream()
+                        .noneMatch(pedido -> Objects.equals(dto.getNumeroControle(), pedido.getNumeroControle())))
+                .collect(Collectors.toList());
+
 
 
         return (listPedidosSalvos.isEmpty()) ?
