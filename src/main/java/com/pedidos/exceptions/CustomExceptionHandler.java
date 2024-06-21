@@ -23,7 +23,7 @@ public class CustomExceptionHandler {
     }
     @ExceptionHandler(ConstraintViolationException.class)
     public final ResponseEntity<ExceptionHandleResponse> handleConstraintViolationException(ConstraintViolationException ex, WebRequest request) {
-        return new ResponseEntity<>(handleResponseBuilder.getExceptionHandleResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage())
+        return new ResponseEntity<>(handleResponseBuilder.getExceptionHandleResponseValid(HttpStatus.BAD_REQUEST.value(), ex.getMessage())
                 , HttpStatus.BAD_REQUEST);
     }
 

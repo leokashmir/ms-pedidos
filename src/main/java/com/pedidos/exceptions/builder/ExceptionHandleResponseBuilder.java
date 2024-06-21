@@ -14,7 +14,7 @@ public class ExceptionHandleResponseBuilder {
     @Value("${projeto.application.version}")
     private String version;
 
-    public ExceptionHandleResponse getExceptionHandleResponse(Integer httpCode, String message){
+    public ExceptionHandleResponse getExceptionHandleResponseValid(Integer httpCode, String message){
         return ExceptionHandleResponse.builder()
                 .apiVersion(version)
                 .error(ErrorHandle.builder()
@@ -24,7 +24,16 @@ public class ExceptionHandleResponseBuilder {
                         .build())
                 .build();
     }
-
+    public ExceptionHandleResponse getExceptionHandleResponse(Integer httpCode, String message){
+        return ExceptionHandleResponse.builder()
+                .apiVersion(version)
+                .error(ErrorHandle.builder()
+                        .httpCode(httpCode.toString())
+                        .message(message)
+                        .detailedMessage(message)
+                        .build())
+                .build();
+    }
 
 
 
